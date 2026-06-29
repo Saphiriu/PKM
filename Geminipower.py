@@ -224,6 +224,10 @@ hw = 5
 t1 = 3
 t2 = 2.3
 zw = 5
+#lozyska
+Pd = np.sqrt(Rdy**2+Rdz**2)
+Cd = Pd/10 * np.cbrt(Lh*n1sk/16666) #daN
+
 
 #srednice walu
 Wd1 = 20
@@ -232,6 +236,8 @@ Wd3 = 19
 Wd4 = Wd1
 Wd5 = 20
 Wd6 = 22
+
+
 
 # ==============================================================================
 # SEKCJA F: WYDRUK WYNIKÓW (PRINT)
@@ -316,4 +322,12 @@ print(f"Minimalna średnica wału Wd3             : {Wd3m:.2f} mm")
 print(f"Srednica d1                             : {Wd1:.2f} mm")
 print(f"Srednica d2                             : {Wd2:.2f} mm")
 print(f"Srednica d3                             : {Wd3:.2f} mm")
+print("=======================================================================")
+
+print("\n=======================================================================")
+print("OBLICZENIA DO LOZYSK")
+print("=======================================================================")
+print(f"Pd                                      : {Pd:.2f} N")
+print(f"Cd                                      : {Cd:.2f} daN")
+print(f"przyjete lozysko 6003"                                     )
 print("=======================================================================")
