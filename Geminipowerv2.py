@@ -76,7 +76,7 @@ i_pn = math.ceil(i_p)  # Zaokrąglenie w górę przełożenia pasowego
 
 # Prędkość obrotowa wału szybkiegu (wejściowego przekładni zębatej)
 n1 = n_s_prime / i_pn
-M0 = (9550 * (10**3)) * N0 / n1
+M0 = ((9550 * (10**3)) * N0 )/ n1
 
 # ==============================================================================
 # SEKCJA 3: OBLICZENIA PRZEKŁADNI PASOWEJ (TYP A)
@@ -219,12 +219,12 @@ Wd2m = np.cbrt((16 * Mz3) / (np.pi * Wk))
 Wd3m = np.cbrt((16 * Mz4) / (np.pi * Wk))
 
 # wpust z tabelki
-bw = 6
-hw = 6
-t1 = 3.5
-t2 = 2.8
-zw = 6
-wc = 1
+bw = 10
+hw = 8
+t1 = 5
+t2 = 3.3
+zw = 8
+wc = 1.6
 
 #lozyska
 Pd = np.sqrt(Rdy**2+Rdz**2)
@@ -232,12 +232,12 @@ Cd = Pd/10 * np.cbrt(Lh*n1/16666) #daN
 
 
 #srednice walu
-Wd1 = 20
+Wd1 = 30
 Wd2 = np.floor(1.2*Wd1)
-Wd3 = 19
+Wd3 = 28.6
 Wd4 = Wd1
-Wd5 = 20
-Wd6 = 25
+Wd5 = 30
+Wd6 = 35
 Wd7 = Wd3
 Wd8 = Wd5
 Wd9 = Wd8 - 2*wc
@@ -254,7 +254,7 @@ Wl1 = bz
 Wl2 = 5
 Wl3 = f
 Wl4 = hw
-Wl5 = 14
+Wl5 = 16
 Wl6 = wa2 - (Wl3+Wl4+(Wl1+Wl5)/2)
 Wl7 = f
 Wl8 = hw - wc
@@ -282,19 +282,67 @@ dlugosci_walu = [
 
 
 srednice_unikalne = set(wszystkie_srednice)
-J0 = (32 / np.pi) * sum(1 / d**4 for d in srednice_unikalne)
-phip = (Ms / G) * J0
+G = 83000 # Moduł Kirchhoffa [MPa]
 
-#Warunki wpustu
+# ==============================================================================
+# POPRAWIONA SEKCJA: WARUNEK NA SZTYWNOŚĆ SKRĘTNĄ
+# ==============================================================================
+# Dla wału stopniowego całkowity kąt skręcenia to suma kątów skręcenia poszczególnych odcinków:
+# delta_phi = SUMA( (Ms * L_i) / (G * Jp_i) )
+# gdzie Jp_i = (pi * d_i^4) / 32
+# Co można zapisać jako: delta_phi = (32 * Ms) / (pi * G) * SUMA(L_i / d_i^4)
+
+suma_L_di4 = 0.0
+for d, L in zip(wszystkie_srednice, dlugosci_walu):
+    if d > 0: # Zabezpieczenie przed dzieleniem przez zero
+        suma_L_di4 += L / (d ** 4)
+
+# Całkowity kąt skręcenia wału [rad]
+delta_phi_rad = (32 * Ms / (np.pi * G)) * suma_L_di4
+
+# Całkowity kąt skręcenia wału [stopnie]
+delta_phi_deg = np.rad2deg(delta_phi_rad)
+
+# Całkowita długość wału [mm]
+L_total = sum(dlugosci_walu)
+
+# Średni kąt skręcenia jednostkowy na całej długości wału [rad/mm]
+phip_rad_mm = delta_phi_rad / L_total
+
+# Konwersja na typową jednostkę inżynierską: [stopnie / metr]
+phip_deg_m = phip_rad_mm * 1000 * (180 / np.pi)
+
+# Opcjonalnie: Maksymalny lokalny kąt skręcenia jednostkowy (występuje na najcieńszym odcinku)
+d_min = min(wszystkie_srednice)
+Jp_min = (np.pi * d_min**4) / 32
+phip_max_rad_mm = Ms / (G * Jp_min)
+phip_max_deg_m = phip_max_rad_mm * 1000 * (180 / np.pi)
+
+
+# ==============================================================================
+# WARUNKI WPUSTU (pozostaje bez zmian)
+# ==============================================================================
 Pp = 2*M0/Wd1
 wpd = 130
 lw = 4*M0/(Wd1 * hw * wpd)
 Ap = hw/2*lw
 l0 = lw+bw
-l0n = 18
+l0n = 22
+# ==============================================================================
+# Strzalki ugiecia i katy ugiecia
+# ==============================================================================
+suma_di2_li2 = sum(d**2 * l for d, l in zip(wszystkie_srednice, dlugosci_walu))
+dz = math.sqrt(suma_di2_li2 / L_total)
+Jz = (dz**4) * np.pi / 64
+yI = (Qy * wa1 * (wa2**2) )/(4*E*Jz)
+yII = Fr * wa2**3 /(6*E*Jz)
+yIII = yII
+φBI = 2*Qy*wa1*wa2/(3*E*Jz)
+φBII = Fr*wa2**2/(4*E*Jz)
+φDI = -1*(Qy*wa1*wa2/(3*E*Jz))
+φDII = -1*(Qy*wa1*wa2/(3*E*Jz))
 
 
-print(f"phip{phip}")
 
 
 
@@ -389,15 +437,17 @@ print(f"  CAŁKOWITA DŁUGOŚĆ WAŁU                 : {sum(dlugosci_walu):.2f}
 print("-" * 70)
 
 print("\n" + "=" * 70)
-print("SZTYWNOŚĆ SKRĘCNA WAŁU - KĄT SKRĘCENIA φ'")
+print("SZTYWNOŚĆ SKRĘCNA WAŁU")
 print("=" * 70)
-print(f"Unikalne średnice wału                   : {sorted(srednice_unikalne)}")
-print(f"Suma Σ(1/d⁴) dla unikalnych średnic      : {sum(1.0/d**4 for d in srednice_unikalne):.2e}")
-print(f"Współczynnik sztywności skrętnej J₀      : {J0:.6e}")
 print(f"Moduł Kirchhoffa G                       : {G} MPa")
 print(f"Moment skręcający Ms                     : {Ms:.2f} Nmm")
+print(f"Całkowita długość wału (L_total)         : {L_total:.2f} mm")
+print(f"Suma ułamków sztywności Σ(L/d⁴)         : {suma_L_di4:.2e} mm⁻³")
 print("-" * 70)
-print(f"  KĄT SKRĘCENIA JEDNOSTKOWY φ'           : {phip:.6e} rad/mm")
+print(f"  CAŁKOWITY KĄT SKRĘCENIA Δφ             : {delta_phi_rad:.6f} rad  ({delta_phi_deg:.4f}°)")
+print(f"  ŚREDNI KĄT SKRĘCENIA JEDNOSTKOWY φ'   : {phip_rad_mm:.4e} rad/mm  ({phip_deg_m:.4f} °/m)")
+print(f"  MAKS. LOKALNY KĄT SKRĘCENIA φ'_max    : {phip_max_rad_mm:.4e} rad/mm  ({phip_max_deg_m:.4f} °/m)")
+print(f"  (występuje na najcieńszym odcinku Ø{d_min:.0f} mm)")
 print("=" * 70)
 
 print("\n" + "=" * 70)
@@ -417,3 +467,23 @@ print(f"Długość obliczeniowa wpustu (lw)         : {lw:.2f} mm")
 print(f"Długość nominalna wpustu (l0)            : {l0:.2f} mm")
 print(f"Długość znormalizowana (l0n)             : {l0n} mm")
 print("=" * 70)
+
+print("\n" + "=" * 70)
+print("OBLICZENIA STRZALEK I KATOW")
+print("=" * 70)
+print(f"Średnica zastępcza do obliczeń sztywności (d_z): {dz:.2f} mm")
+print(f"Jz                                       : {Jz}  mm")
+print(f"yI                                       : {yI} mm")
+print(f"yII                                      : {yII:} mm")
+print(f"yIII                                     : {yIII:} mm")
+print(f"φBI                                      : {φBI}")
+print(f"φBII                                     : {φBII}")
+print(f"φDI                                      : {φDI}")
+print(f"φDII                                     : {φDII}")
+print(f"warunek yI+yII+yIII <= 0.005 mn {yI+yII+yIII} <= {0.005*mnf}")
+print(f"warunek φBI + φBII <= 0.0023 rad {φBI + φBII} <= {0.0023}")
+print(f"warunek φDI + φDII <= 0.0023 rad {abs(φDI) + abs(φDII)} <= {0.0023}")
+
+print("=" * 70)
+
+print(f"test = {E}")
