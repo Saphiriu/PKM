@@ -244,6 +244,11 @@ Wd8 = Wd5
 Wd9 = Wd8 - 2*wc
 Wd10 = Wd5
 Wd11 = Wd6
+Wd12 = Wd10
+Wd13 = Wd12
+Wd14 = Wd7
+Wd1356asd
+
 
 #Warunki wpustu
 Pp = 2*M0/Wd1
@@ -252,6 +257,7 @@ lw = 4*M0/(Wd1 * hw * wpd)
 Ap = hw/2*lw
 l0 = lw+bw
 l0n = 18
+
 
 
 
