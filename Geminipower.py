@@ -172,7 +172,6 @@ wa = wa1 + wa2
 
 # Reakcje w podporach (łożyskach)
 Rbx = -1 * Fa
-# UWAGA: W poniższym wzorze występuje błąd (użyto dp/2 zamiast d1/2 dla ramienia siły Fa) - szczegóły pod kodem
 Rdy = ((-1 * Qy * wa1) - (Fr * wa2) - (Fa * (d1 / 2))) / (2 * wa2)
 Rby = (-1 * Rdy) + Qy - Fr
 
@@ -201,10 +200,12 @@ MgIV = np.sqrt(Mg3**2 + Mg3z**2)
 MgV = 0.0
 
 # Momenty zredukowane (zastępcze)
-# UWAGA: W poniższych wzorach współczynnik 3/16 drastycznie zaniża wyniki - szczegóły w analizie pod kodem
 Mz2 = np.sqrt((MgII)**2 + ((3 / 16) * (Ms**2)))
 Mz3 = np.sqrt((MgIII)**2 + ((3 / 16) * (Ms**2)))
 Mz4 = np.sqrt((MgIII)**2 + ((3 / 16) * (Ms**2)))
+
+
+
 
 # ==============================================================================
 # SEKCJA 6: OBLICZENIA WYTRZYMAŁOŚCIOWE WAŁU (ŚREDNICE)
@@ -219,14 +220,12 @@ Wd2m = np.cbrt((16 * Mz3) / (np.pi * Wk))
 Wd3m = np.cbrt((16 * Mz4) / (np.pi * Wk))
 
 # wpust z tabelki
-bw = 5
-hw = 5
-t1 = 3
-t2 = 2.3
-zw = 5
-
-
-
+bw = 6
+hw = 6
+t1 = 3.5
+t2 = 2.8
+zw = 6
+wc = 1
 
 #lozyska
 Pd = np.sqrt(Rdy**2+Rdz**2)
@@ -239,7 +238,12 @@ Wd2 = np.floor(1.2*Wd1)
 Wd3 = 19
 Wd4 = Wd1
 Wd5 = 20
-Wd6 = 22
+Wd6 = 25
+Wd7 = Wd3
+Wd8 = Wd5
+Wd9 = Wd8 - 2*wc
+Wd10 = Wd5
+Wd11 = Wd6
 
 #Warunki wpustu
 Pp = 2*M0/Wd1
@@ -247,7 +251,7 @@ wpd = 130
 lw = 4*M0/(Wd1 * hw * wpd)
 Ap = hw/2*lw
 l0 = lw+bw
-l0n = 20
+l0n = 18
 
 
 
@@ -341,7 +345,7 @@ print("OBLICZENIA DO LOZYSK")
 print("=======================================================================")
 print(f"Pd                                      : {Pd:.2f} N")
 print(f"Cd                                      : {Cd:.2f} daN")
-print(f"przyjete lozysko 6003"                                     )
+print(f"przyjete lozysko 6204"                                     )
 print("=======================================================================")
 print("\n=======================================================================")
 print("OBLICZENIA Wpustu")
