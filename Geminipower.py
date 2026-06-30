@@ -247,7 +247,19 @@ Wd11 = Wd6
 Wd12 = Wd10
 Wd13 = Wd12
 Wd14 = Wd7
-Wd1356asd
+Wd15 = Wd8
+Wd16 = Wd9
+
+#warunek na szywnosc skretna
+wszystkie_srednice = [
+    Wd1, Wd2, Wd3, Wd4, Wd5, Wd6, Wd7, Wd8,
+    Wd9, Wd10, Wd11, Wd12, Wd13, Wd14, Wd15, Wd16
+]
+srednice_unikalne = list(dict.fromkeys(int(d) for d in wszystkie_srednice))
+
+J0 = (32 / np.pi) * sum(1 / (d**4) for d in srednice_unikalne)
+G = 83000
+phip = (Ms*J0/G)*1000
 
 
 #Warunki wpustu
@@ -257,6 +269,8 @@ lw = 4*M0/(Wd1 * hw * wpd)
 Ap = hw/2*lw
 l0 = lw+bw
 l0n = 18
+
+
 
 
 
@@ -344,6 +358,22 @@ print(f"Minimalna średnica wału Wd3             : {Wd3m:.2f} mm")
 print(f"Srednica d1                             : {Wd1:.2f} mm")
 print(f"Srednica d2                             : {Wd2:.2f} mm")
 print(f"Srednica d3                             : {Wd3:.2f} mm")
+print(f"Srednica d4                             : {Wd4:.2f} mm")
+print(f"Srednica d5                             : {Wd5:.2f} mm")
+print(f"Srednica d6                             : {Wd6:.2f} mm")
+print(f"Srednica d7                             : {Wd7:.2f} mm")
+print(f"Srednica d8                             : {Wd8:.2f} mm")
+print(f"Srednica d9                             : {Wd9:.2f} mm")
+print(f"Srednica d10                            : {Wd10:.2f} mm")
+print(f"Srednica d11                            : {Wd11:.2f} mm")
+print(f"Srednica d12                            : {Wd12:.2f} mm")
+print(f"Srednica d13                            : {Wd13:.2f} mm")
+print(f"Srednica d14                            : {Wd14:.2f} mm")
+print(f"Srednica d15                            : {Wd15:.2f} mm")
+print(f"Srednica d16                            : {Wd16:.2f} mm")
+print(f"Wykryte unikalne średnice wału          : {srednice_unikalne} mm")
+print(f"Suma (1/J0k) wynosi                     : {J0:.4e} mm^-4")
+print(f"Kat skrecania                           : {phip} rad/m")
 print("=======================================================================")
 
 print("\n=======================================================================")
