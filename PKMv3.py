@@ -232,10 +232,10 @@ Cd = (Pd / 10) * np.cbrt((Lh * n1) / 16666) # [daN]
 
 # Przyjęte średnice wału [mm] - POPRAWIONO BŁĄD PRZYPISANIA
 Wd1 = 30
-Wd2 = np.floor(1.2 * Wd1)
+Wd2 = 34
 Wd3 = 28.6
 Wd4 = Wd1
-Wd5 = 30
+Wd5 = Wd4
 Wd6 = 35
 Wd7 = Wd3
 Wd8 = Wd5
@@ -251,12 +251,12 @@ Wd16 = Wd9
 # Przyjęte długości odcinków wału [mm]
 Wl1 = bz
 Wl2 = 5
-Wl3 = f
-Wl4 = hw
+Wl3 = 1.6
+Wl4 = 2.1
 Wl5 = 16
 Wl6 = wa2 - (Wl3 + Wl4 + (Wl1 + Wl5)/2)
-Wl7 = f
-Wl8 = hw - wc
+Wl7 = 1.6
+Wl8 = 2.1 - wc
 Wl9 = wc
 Wl10 = Wl5
 Wl11 = wa2 - (Wl2 + (Wl10 + Wl1)/2)
